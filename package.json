@@ -1,0 +1,21 @@
+{
+    "name": "vdss-2.0",
+    "version": "1.0.0",
+    "description": "VDSS 2.0 - Vasus Digital Sales System Monorepo",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+        "dev:backend": "cd backend && npm run dev",
+        "dev:frontend": "cd frontend && npm run dev",
+        "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+        "prisma:generate": "cd backend && npm run prisma:generate",
+        "prisma:migrate": "cd backend && npx prisma migrate dev --schema=./prisma/schema.prisma",
+        "prisma:seed": "cd backend && npm run prisma:seed"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

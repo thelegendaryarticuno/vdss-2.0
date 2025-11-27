@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://neondb_owner:npg_dyDij4uG8tmL@ep-noisy-bonus-ahjoccyc-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  SALES_REP
+  DISTRIBUTOR
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  quotesCreated Quote[] @relation("QuoteSalesRep")
+  ordersCreated Order[] @relation("OrderSalesRep")
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  code         String?  @unique
+  name         String
+  contactPerson String?
+  phone        String?
+  email        String?
+  address      String?
+  city         String?
+  region       String?
+  segment      String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  quotes  Quote[]
+  orders  Order[]
+  salesSummaries SalesSummary[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  name        String
+  description String?
+  category    String?
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  unit        String?  @default("piece")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  quoteItems      QuoteItem[]
+  orderItems      OrderItem[]
+  inventorySnapshots InventorySnapshot[]
+}
+
+model Quote {
+  id          String      @id @default(cuid())
+  quoteNumber String      @unique
+  customerId  String
+  salesRepId  String
+  status      QuoteStatus @default(DRAFT)
+  validUntil  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  salesRep   User       @relation("QuoteSalesRep", fields: [salesRepId], references: [id])
+  items      QuoteItem[]
+  orders     Order[]
+}
+
+model QuoteItem {
+  id             String  @id @default(cuid())
+  quoteId        String
+  productId      String
+  quantity       Int
+  unitPrice      Decimal @db.Decimal(10, 2)
+  discountPercent Float  @default(0)
+  total          Decimal @db.Decimal(10, 2)
+
+  // Relations
+  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+  customerId  String
+  salesRepId  String
+  quoteId     String?
+  status      OrderStatus @default(PENDING)
+  orderDate   DateTime    @default(now())
+  totalAmount Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  customer Customer   @relation(fields: [customerId], references: [id])
+  salesRep User       @relation("OrderSalesRep", fields: [salesRepId], references: [id])
+  quote    Quote?     @relation(fields: [quoteId], references: [id])
+  items    OrderItem[]
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  productId      String
+  quantity       Int
+  unitPrice      Decimal @db.Decimal(10, 2)
+  discountPercent Float  @default(0)
+  total          Decimal @db.Decimal(10, 2)
+
+  // Relations
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model InventorySnapshot {
+  id                String   @id @default(cuid())
+  productId         String
+  quantityAvailable Int
+  snapshotTime      DateTime @default(now())
+  source            String   @default("MANUAL")
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model SalesSummary {
+  id              String   @id @default(cuid())
+  customerId      String
+  period          String   // e.g. "2025-01"
+  totalSalesAmount Decimal @db.Decimal(10, 2)
+  totalOrders     Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id])
+}
