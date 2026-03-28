@@ -2,11 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import routes from './routes';
 import { errorMiddleware } from './middleware/errorMiddleware';
+import { config } from './config/env';
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: config.server.corsOrigin === '*' ? true : config.server.corsOrigin,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

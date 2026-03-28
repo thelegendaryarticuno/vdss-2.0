@@ -48,7 +48,7 @@ export const QuotesPage: React.FC = () => {
     ...q,
     customerName: q.customer?.name || '-',
     total: `$${q.total?.toFixed(2) || '0.00'}`,
-    createdAt: new Date(q.createdAt).toLocaleDateString(),
+    createdAt: q.createdAt ? new Date(q.createdAt).toLocaleDateString() : '-',
   }));
 
   return (

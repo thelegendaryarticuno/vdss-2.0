@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Card } from '../components/ui/Card';
 import { orderApi } from '../api/orderApi';
-import { reportApi } from '../api/reportApi';
 import { aiApi } from '../api/aiApi';
 import { SalesForecastChart } from '../components/charts/SalesForecastChart';
 

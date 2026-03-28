@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { customerApi, Customer } from '../api/customerApi';
 import { aiApi } from '../api/aiApi';
 import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
 import { SalesForecastChart } from '../components/charts/SalesForecastChart';
 import { Table } from '../components/ui/Table';

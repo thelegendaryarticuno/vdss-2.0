@@ -6,6 +6,9 @@ export interface Order {
   customerId: string;
   salesRepId: string;
   quoteId?: string;
+  quote?: {
+    quoteNumber: string;
+  } | null;
   status: string;
   orderDate: string;
   totalAmount: number;

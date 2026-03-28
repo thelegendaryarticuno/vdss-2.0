@@ -13,6 +13,7 @@ export interface Quote {
   customerId: string;
   salesRepId: string;
   status: string;
+  createdAt?: string;
   validUntil?: string;
   customer?: any;
   items?: any[];

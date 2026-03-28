@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 interface TableProps {
   columns: Array<{ key: string; header: string }>;

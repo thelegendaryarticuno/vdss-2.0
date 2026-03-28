@@ -18,25 +18,34 @@ if (!loaded) {
   dotenv.config();
 }
 
+const parseNumber = (value: string | undefined, fallback: number) => {
+  const parsed = Number.parseInt(value || '', 10);
+  return Number.isNaN(parsed) ? fallback : parsed;
+};
+
 export const config = {
   database: {
-    url: 'postgresql://neondb_owner:npg_dyDij4uG8tmL@ep-noisy-bonus-ahjoccyc-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+    url:
+      process.env.DATABASE_URL ||
+      'postgresql://postgres:postgres@localhost:5432/vdss',
   },
   jwt: {
-    secret: 'change_this_secret_key_in_production_min_32_chars',
+    secret:
+      process.env.JWT_SECRET || 'change_this_secret_key_in_production_min_32_chars',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   },
   server: {
-    port: 4000,
+    port: parseNumber(process.env.PORT, 4000),
     nodeEnv: process.env.NODE_ENV || 'development',
+    corsOrigin: process.env.CORS_ORIGIN || '*',
   },
   aiService: {
     baseUrl: process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000',
-    timeoutMs: parseInt(process.env.AI_SERVICE_TIMEOUT_MS || '4000', 10),
+    timeoutMs: parseNumber(process.env.AI_SERVICE_TIMEOUT_MS, 4000),
   },
   smtp: {
     host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
+    port: parseNumber(process.env.SMTP_PORT, 587),
     user: process.env.SMTP_USER,
     password: process.env.SMTP_PASS,
     fromEmail: process.env.SMTP_FROM_EMAIL,
