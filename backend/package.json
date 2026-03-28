@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "prisma:generate": "prisma generate",
+    "start": "npm run build && npm run prisma:prepare && node dist/server.js",
+    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "prisma:sync": "prisma db push --skip-generate --schema=./prisma/schema.prisma",
+    "prisma:prepare": "npm run prisma:generate && npm run prisma:sync",
     "prisma:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:studio": "prisma studio"
@@ -19,7 +21,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^5.7.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -27,7 +30,6 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.10.5",
-    "prisma": "^5.7.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
