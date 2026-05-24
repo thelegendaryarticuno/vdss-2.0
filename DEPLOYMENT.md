@@ -48,8 +48,8 @@ Create another Render Web Service:
 
 - Root directory: `backend`
 - Runtime: Node
-- Build command: `npm install && npm run build`
-- Start command: `npm run prisma:prepare && node dist/server.js`
+- Build command: `npm ci && npm run build`
+- Start command: `npm start`
 - Health check path: `/health`
 
 Environment variables:
@@ -70,7 +70,7 @@ Generate `JWT_SECRET` locally with:
 openssl rand -base64 32
 ```
 
-The backend currently uses `prisma db push` through `npm run prisma:prepare`, so it will sync the Prisma schema to Neon during startup.
+The backend build generates Prisma Client before compiling TypeScript. The production start command only starts the already-built server.
 
 Optional: seed the database once from your machine or a temporary Render shell:
 
@@ -82,6 +82,15 @@ npm run prisma:seed
 ```
 
 Use the same `DATABASE_URL` when seeding.
+
+If you later change `backend/prisma/schema.prisma`, push the schema again before or during deployment:
+
+```bash
+cd backend
+npx prisma db push --schema=./prisma/schema.prisma
+```
+
+Do not run `npm run prisma:seed` again unless you intentionally want to insert the seed data again.
 
 ## 4. Deploy the Frontend on Vercel
 
